@@ -1,25 +1,25 @@
 import Router from "koa-router";
 import ErrorObj from "../../common/utils/errorObj.js";
 import { ToastCode } from "../../common/consts/businessCode.js";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { parse, join } from "path";
 
-// 获取当前目录
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const isProd = process.env.NODE_ENV === "production" ? true : false;
+// 获取根目录
+const rootPath = parse(process.cwd()).root;
+const uploadPath = isProd
+  ? join(rootPath, "webProject/uploadFiles")
+  : "/Users/yangxuan/Desktop/marry-project/nodeServerUploadFiles";
 
 const router = new Router();
 
 // 添加用户
 router.post("/upload", async (ctx) => {
   try {
+    const { targetFolder = "files" } = ctx.request.body;
     const files = ctx.request.files; // 获取上传的文件
-    const file = files.onelightfile; // 文件字段名为 "onelightfile"
-    const filePath = join(
-      __dirname,
-      "/uploadFiles/userAvatar",
-      file.newFilename
-    );
+    const file = files[targetFolder]; // 文件字段名为 "onelightfile"
+    const filePath = join(uploadPath, targetFolder, file.newFilename);
+    console.log("9898--filePath", filePath);
     ctx.body = {
       message: "头像上传成功",
       toastCode: ToastCode.success,

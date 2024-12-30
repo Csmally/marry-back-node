@@ -2,7 +2,7 @@ import Koa from "koa";
 import Router from "koa-router";
 import bodyParser from "koa-bodyparser";
 import { koaBody } from "koa-body";
-import { dirname, join } from "path";
+import { join, parse } from "path";
 import { fileURLToPath } from "url";
 // import { initDb } from "./src/models/index.js";
 import cors from "@koa/cors";
@@ -12,10 +12,13 @@ import errorHandler from "./src/common/utils/errorHandler.js";
 import { SECRET } from "./src/config/secret.js";
 import koaJwt from "koa-jwt";
 
-// 获取当前目录
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const isProd = process.env.NODE_ENV === "production" ? true : false;
+// 获取根目录
+const rootPath = parse(process.cwd()).root;
+const uploadPath = isProd
+  ? join(rootPath, "webProject/uploadFiles")
+  : "/Users/yangxuan/Desktop/marry-project/nodeServerUploadFiles";
+// userAvatar
 const app = new Koa();
 const router = new Router({
   prefix: "/marry/api",
@@ -25,8 +28,10 @@ app.use(
   koaBody({
     multipart: true, // 允许处理 multipart/form-data 类型的请求
     formidable: {
-      uploadDir: join(__dirname, "/uploadFiles/userAvatar"), // 使用 __dirname 获取目录
       keepExtensions: true, // 保留文件扩展名
+      onFileBegin: (name, file) => {
+        file.filepath = join(uploadPath, name || "files", file.newFilename);
+      },
     },
   })
 );
@@ -50,6 +55,5 @@ router.use(businessRoutes.routes()).use(router.allowedMethods());
 
 app.use(router.routes()).use(router.allowedMethods());
 
-const isProd = process.env.NODE_ENV === "production" ? true : false;
 const port = isProd ? 8080 : 3030;
 app.listen(port);
