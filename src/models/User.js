@@ -5,23 +5,23 @@ const User = sequelize.define(
   "User",
   {
     openid: {
-        type: DataTypes.STRING(191),
-        allowNull: false,
-        unique: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     avatar: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     nickname: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    }
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
   {
     defaultScope: {
-        attributes: {
-            exclude: ["createdAt", "updatedAt"],
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
       },
     },
   }
