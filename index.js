@@ -3,8 +3,7 @@ import Router from "koa-router";
 import bodyParser from "koa-bodyparser";
 import { koaBody } from "koa-body";
 import { join, parse } from "path";
-import { fileURLToPath } from "url";
-// import { initDb } from "./src/models/index.js";
+import { initDb } from "./src/models/index.js";
 import cors from "@koa/cors";
 import businessRoutes from "./src/routes/index.js";
 import formatResponseData from "./src/common/utils/formatData.js";
@@ -24,6 +23,7 @@ const router = new Router({
   prefix: "/marry/api",
 });
 
+// 配置 koa-body
 app.use(
   koaBody({
     multipart: true, // 允许处理 multipart/form-data 类型的请求
@@ -35,19 +35,21 @@ app.use(
     },
   })
 );
+
 // 中间件
 app.use(bodyParser());
 // 使用 CORS 中间件，允许所有源访问
+
 app.use(cors());
-// 配置 koa-body
+
 // 初始化数据库
-// initDb();
+initDb();
 
 // 错误处理中间件
 app.use(errorHandler);
 
 // 除了登录路由外，其他路由都需要验证
-// app.use(koaJwt({ secret: SECRET }).unless({ path: [/^\/marry\/api\/login/] }));
+app.use(koaJwt({ secret: SECRET }).unless({ path: [/^\/marry\/api\/login/] }));
 
 app.use(formatResponseData);
 

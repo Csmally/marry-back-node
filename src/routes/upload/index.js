@@ -19,10 +19,9 @@ router.post("/upload", async (ctx) => {
     const files = ctx.request.files; // 获取上传的文件
     const file = files[targetFolder]; // 文件字段名为 "onelightfile"
     const filePath = join(uploadPath, targetFolder, file.newFilename);
-    console.log("9898--filePath", filePath);
     ctx.body = {
       message: "头像上传成功",
-      toastCode: ToastCode.success,
+      avatar: `https://www.onelight.ink/userAssets/${targetFolder}/${file.newFilename}`
     };
   } catch (error) {
     throw new ErrorObj(error, "头像上传失败");

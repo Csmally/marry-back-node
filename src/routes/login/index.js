@@ -4,6 +4,7 @@ import { ToastCode } from "../../common/consts/businessCode.js";
 import jwt from "jsonwebtoken";
 import { SECRET, MINIAPPID, MINISECRET } from "../../config/secret.js";
 import axios from "axios";
+import { User } from "../../models/index.js";
 
 const router = new Router();
 
@@ -24,15 +25,30 @@ router.post("/login", async (ctx) => {
     );
     const openid = txRes.data.openid;
     // 用户验证成功，生成 JWT
-    const token = jwt.sign({ openid }, SECRET, { expiresIn: "30d" });
+    const token = jwt.sign({ openid }, SECRET, { expiresIn: "7d" });
+    const user = await User.findOne({
+      where: { openid },
+    });
     ctx.body = {
-      message: "欢迎您的到来",
-      toastCode: ToastCode.success,
       openid,
       token,
+      user,
     };
   } catch (error) {
-    throw new ErrorObj(error, "账号或密码错误");
+    throw new ErrorObj(error, "登记失败");
+  }
+});
+
+router.post("/addUser", async (ctx) => {
+  try {
+    const user = ctx.request.body;
+    await User.create(user);
+    ctx.body = {
+      message: "感谢您的参加",
+      toastCode: ToastCode.success,
+    };
+  } catch (error) {
+    throw new ErrorObj(error, "登记失败");
   }
 });
 
