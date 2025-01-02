@@ -33,6 +33,8 @@ router.post("/login", async (ctx) => {
       openid,
       token,
       user,
+      message: "感谢您的参加",
+      toastCode: ToastCode.success,
     };
   } catch (error) {
     throw new ErrorObj(error, "登记失败");
@@ -44,7 +46,7 @@ router.post("/addUser", async (ctx) => {
     const user = ctx.request.body;
     await User.create(user);
     ctx.body = {
-      message: "感谢您的参加",
+      message: "登记成功",
       toastCode: ToastCode.success,
     };
   } catch (error) {
