@@ -52,4 +52,20 @@ router.get("/common/sse", async (ctx) => {
   });
 });
 
+router.get("/common/randomChats", async (ctx) => {
+  try {
+    const total = await Chat.count(); // 获取表中总记录数
+    const randomOffset = Math.floor(Math.random() * (total - 10)); // 随机偏移量
+    const randomChats = await Chat.findAll({
+      limit: 10,
+      offset: randomOffset,
+    });
+    ctx.body = {
+      list: randomChats,
+    };
+  } catch (error) {
+    throw new ErrorObj(error);
+  }
+});
+
 export default router;
