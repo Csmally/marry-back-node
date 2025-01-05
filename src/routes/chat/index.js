@@ -59,6 +59,13 @@ router.get("/common/randomChats", async (ctx) => {
     const randomChats = await Chat.findAll({
       limit: 10,
       offset: randomOffset,
+      include: [
+        {
+          model: User,
+          attributes: ["avatar"],
+        },
+      ],
+      raw: true,
     });
     ctx.body = {
       list: randomChats,
