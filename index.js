@@ -49,7 +49,11 @@ initDb();
 app.use(errorHandler);
 
 // 除了登录路由外，其他路由都需要验证
-app.use(koaJwt({ secret: SECRET }).unless({ path: [/^\/marry\/api\/login/] }));
+app.use(
+  koaJwt({ secret: SECRET }).unless({
+    path: [/^\/marry\/api\/login/, /^\/marry\/api\/common/],
+  })
+);
 
 app.use(formatResponseData);
 
