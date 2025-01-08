@@ -14,7 +14,7 @@ const router = new Router();
 // 添加用户
 router.post("/upload", async (ctx) => {
   try {
-    const { targetFolder = "files" } = ctx.request.body;
+    const { targetFolder = "files", sseSend = false } = ctx.request.body;
     const files = ctx.request.files; // 获取上传的文件
     const file = files[targetFolder]; // 文件字段名为 "onelightfile"
     ctx.body = {
