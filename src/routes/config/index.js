@@ -7,9 +7,9 @@ const router = new Router();
 router.get("/getConfigs", async (ctx) => {
   try {
     const config = await Config.findOne();
-    ctx.body = { ...config.dataValues };
+    ctx.body = config ? { ...config.dataValues } : {};
   } catch (error) {
-    throw new ErrorObj(error, "稍后上传");
+    throw new ErrorObj();
   }
 });
 
