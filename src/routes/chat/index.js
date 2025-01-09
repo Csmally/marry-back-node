@@ -55,7 +55,8 @@ router.get("/common/sse", async (ctx) => {
 router.get("/common/randomChats", async (ctx) => {
   try {
     const total = await Chat.count(); // 获取表中总记录数
-    const randomOffset = total > 10 ? Math.floor(Math.random() * (total - 10)) : 0; // 随机偏移量
+    const randomOffset =
+      total > 10 ? Math.floor(Math.random() * (total - 10)) : 0; // 随机偏移量
     const randomChats = await Chat.findAll({
       limit: 10,
       offset: randomOffset,
@@ -71,7 +72,6 @@ router.get("/common/randomChats", async (ctx) => {
       list: randomChats,
     };
   } catch (error) {
-    console.log('9898报错', error)
     throw new ErrorObj(error);
   }
 });

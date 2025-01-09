@@ -54,4 +54,13 @@ router.post("/addUser", async (ctx) => {
   }
 });
 
+router.get("/searchAllUser", async (ctx) => {
+  try {
+    const list = await User.findAll({});
+    ctx.body = { list };
+  } catch (error) {
+    throw new ErrorObj(error, "查询失败");
+  }
+});
+
 export default router;
