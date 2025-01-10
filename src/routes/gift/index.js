@@ -4,8 +4,6 @@ import { GiftUser } from "../../models/index.js";
 
 const router = new Router();
 
-const clients = new Map();
-
 router.get("/checkGift", async (ctx) => {
   try {
     const { openid } = ctx.request.header;
