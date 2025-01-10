@@ -9,10 +9,6 @@ const AdminUser = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    powerLevel: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     defaultScope: {

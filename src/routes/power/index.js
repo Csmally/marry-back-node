@@ -10,11 +10,19 @@ router.get("/checkPowerLevel", async (ctx) => {
     const user = await AdminUser.findOne({
       where: { openid },
     });
-    if (user) {
-      ctx.body = { powerLevel: user.dataValues.powerLevel };
-    } else {
-      ctx.body = { powerLevel: 0 };
-    }
+    ctx.body = { isAdminUser: user ? true : false };
+  } catch (error) {
+    throw new ErrorObj();
+  }
+});
+
+router.post("/editUserPower", async (ctx) => {
+  try {
+    const { users = [] } = ctx.request.body;
+    await AdminUser.bulkCreate(users, {
+      ignoreDuplicates: true, // 如果 openid 存在就跳过插入
+    });
+    ctx.body = {};
   } catch (error) {
     throw new ErrorObj();
   }
