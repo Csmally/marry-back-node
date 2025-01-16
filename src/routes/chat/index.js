@@ -21,7 +21,11 @@ router.post("/sendChat", async (ctx) => {
     });
     clients.forEach((c) => {
       c.res.write(
-        `data: ${JSON.stringify({ ...chat, openid, avatar: user.avatar })}\n\n`
+        `event: addChat\ndata: ${JSON.stringify({
+          ...chat,
+          openid,
+          avatar: user.avatar,
+        })}\n\n`
       );
     });
     ctx.body = {
@@ -30,6 +34,19 @@ router.post("/sendChat", async (ctx) => {
     };
   } catch (error) {
     throw new ErrorObj(error, "发送祝福失败");
+  }
+});
+router.post("/ssePhotoTest", async (ctx) => {
+  try {
+    clients.forEach((c) => {
+      c.res.write(`event: addPhoto\ndata: photophoto\n\n`);
+    });
+    ctx.body = {
+      message: "sse上传图片测试成功",
+      toastCode: ToastCode.success,
+    };
+  } catch (error) {
+    throw new ErrorObj(error, "sse上传图片测试失败");
   }
 });
 
@@ -73,6 +90,20 @@ router.get("/common/randomChats", async (ctx) => {
     };
   } catch (error) {
     throw new ErrorObj(error);
+  }
+});
+
+router.post("/upload", async (ctx) => {
+  try {
+    const { targetFolder = "files", sseSend = false } = ctx.request.body;
+    const files = ctx.request.files; // 获取上传的文件
+    const file = files[targetFolder];
+    ctx.body = {
+      message: "头像上传成功",
+      avatar: `https://www.onelight.ink/userAssets/${targetFolder}/${file.newFilename}`,
+    };
+  } catch (error) {
+    throw new ErrorObj(error, "上传失败");
   }
 });
 
