@@ -1,7 +1,8 @@
 import Router from "koa-router";
 import ErrorObj from "../../common/utils/errorObj.js";
-import { GiftUser } from "../../models/index.js";
+import { GiftUser, Chat, Photo, User } from "../../models/index.js";
 import { ToastCode } from "../../common/consts/businessCode.js";
+import sequelize from "../../config/database.js";
 
 const router = new Router();
 
@@ -79,6 +80,50 @@ router.get("/confirmClearGift", async (ctx) => {
         openModal: false,
       };
     }
+  } catch (error) {
+    throw new ErrorObj();
+  }
+});
+
+const getRandomUser = async (type) => {
+  let openid;
+  if (Number(type) === 1) {
+    const randomChat = await Chat.findOne({
+      order: sequelize.random()
+    })
+    openid = randomChat.dataValues.openid;
+  } else {
+    const randomPhoto = await Photo.findOne({
+      order: sequelize.random()
+    });
+    openid = randomPhoto.dataValues.openid;
+  }
+  const randomUser = await GiftUser.findOne({
+    where: { openid },
+  });
+  
+  if (randomUser) {
+    const nextLoopUser = await getRandomUser(type);
+    return nextLoopUser;
+  } else {
+    await GiftUser.create({
+      openid,
+      type,
+      isChecked: false
+    });
+    const user = await User.findOne({
+      where: { openid }
+    })
+    return user.dataValues;
+  }
+}
+
+router.get("/common/randomGiftUser", async (ctx) => {
+  try {
+    const { type } = ctx.request.query;
+    // type-1: 弹幕抽奖  type-2: 相册抽奖
+    const randomUser = await getRandomUser(type);
+    ctx.body = { ...randomUser };
   } catch (error) {
     throw new ErrorObj();
   }
