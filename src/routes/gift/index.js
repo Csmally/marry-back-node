@@ -85,7 +85,8 @@ router.get("/confirmClearGift", async (ctx) => {
   }
 });
 
-const getRandomUser = async (type) => {
+const getRandomUser = async (type, loopCount) => {
+  if (loopCount > 9) return null
   let openid;
   if (Number(type) === 1) {
     const randomChat = await Chat.findOne({
@@ -103,7 +104,7 @@ const getRandomUser = async (type) => {
   });
   
   if (randomUser) {
-    const nextLoopUser = await getRandomUser(type);
+    const nextLoopUser = await getRandomUser(type, loopCount + 1);
     return nextLoopUser;
   } else {
     await GiftUser.create({
@@ -122,10 +123,14 @@ router.get("/common/randomGiftUser", async (ctx) => {
   try {
     const { type } = ctx.request.query;
     // type-1: 弹幕抽奖  type-2: 相册抽奖
-    const randomUser = await getRandomUser(type);
-    ctx.body = { ...randomUser };
+    const randomUser = await getRandomUser(type, 0);
+    if (randomUser) {
+      ctx.body = { ...randomUser };
+    } else {
+      throw new ErrorObj();
+    }
   } catch (error) {
-    throw new ErrorObj();
+    throw new ErrorObj(error, '循环查询次数超限！');
   }
 });
 
