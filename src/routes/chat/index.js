@@ -85,6 +85,9 @@ router.get("/common/randomChats", async (ctx) => {
       ],
       raw: true,
     });
+    clients.forEach((c) => {
+      c.res.write("event: heart\ndata: KeepSSELive\n\n");
+    });
     ctx.body = {
       list: randomChats,
     };
