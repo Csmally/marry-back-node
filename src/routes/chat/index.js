@@ -97,13 +97,19 @@ router.post("/upload", async (ctx) => {
     if (sseSend) {
       await Photo.create({
         openid,
-        photoUrl,
+        photoUrl: assetsUrl,
       });
+      const photoInfo = {
+        url: assetsUrl,
+        isBaseImg: false,
+      };
+      const strPhotoInfo = JSON.stringify(photoInfo);
       clients.forEach((c) => {
-        c.res.write(`event: addPhoto\ndata: ${assetsUrl}\n\n`);
+        c.res.write(`event: addPhoto\ndata: ${strPhotoInfo}\n\n`);
       });
     }
   } catch (error) {
+    console.log("9898-error", error);
     throw new ErrorObj(error, "上传失败");
   }
 });
