@@ -109,7 +109,6 @@ router.post("/upload", async (ctx) => {
       });
     }
   } catch (error) {
-    console.log("9898-error", error);
     throw new ErrorObj(error, "上传失败");
   }
 });

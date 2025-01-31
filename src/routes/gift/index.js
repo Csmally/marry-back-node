@@ -32,7 +32,7 @@ router.get("/checkClearGift", async (ctx) => {
       const userInfo = user.dataValues;
       if (userInfo.isChecked) {
         ctx.body = {
-          message: '重复兑奖！！！',
+          message: "重复兑奖！！！",
           toastCode: ToastCode.error,
           openModal: false,
         };
@@ -41,7 +41,7 @@ router.get("/checkClearGift", async (ctx) => {
       }
     } else {
       ctx.body = {
-        message: '二维码有误！！！',
+        message: "二维码有误！！！",
         toastCode: ToastCode.error,
         openModal: false,
       };
@@ -61,21 +61,24 @@ router.get("/confirmClearGift", async (ctx) => {
       const userInfo = user.dataValues;
       if (userInfo.isChecked) {
         ctx.body = {
-          message: '重复兑奖！！！',
+          message: "重复兑奖！！！",
           toastCode: ToastCode.error,
         };
       } else {
-        await GiftUser.update({
-          isChecked: true
-        }, { where: { openid } });
+        await GiftUser.update(
+          {
+            isChecked: true,
+          },
+          { where: { openid } }
+        );
         ctx.body = {
-          message: '兑奖成功！！！',
+          message: "兑奖成功！！！",
           toastCode: ToastCode.success,
         };
       }
     } else {
       ctx.body = {
-        message: '二维码有误！！！',
+        message: "二维码有误！！！",
         toastCode: ToastCode.error,
         openModal: false,
       };
@@ -86,23 +89,23 @@ router.get("/confirmClearGift", async (ctx) => {
 });
 
 const getRandomUser = async (type, loopCount) => {
-  if (loopCount > 9) return null
+  if (loopCount > 29) return null;
   let openid;
   if (Number(type) === 1) {
     const randomChat = await Chat.findOne({
-      order: sequelize.random()
-    })
+      order: sequelize.random(),
+    });
     openid = randomChat.dataValues.openid;
   } else {
     const randomPhoto = await Photo.findOne({
-      order: sequelize.random()
+      order: sequelize.random(),
     });
     openid = randomPhoto.dataValues.openid;
   }
   const randomUser = await GiftUser.findOne({
     where: { openid },
   });
-  
+
   if (randomUser) {
     const nextLoopUser = await getRandomUser(type, loopCount + 1);
     return nextLoopUser;
@@ -110,14 +113,14 @@ const getRandomUser = async (type, loopCount) => {
     await GiftUser.create({
       openid,
       type,
-      isChecked: false
+      isChecked: false,
     });
     const user = await User.findOne({
-      where: { openid }
-    })
+      where: { openid },
+    });
     return user.dataValues;
   }
-}
+};
 
 router.get("/common/randomGiftUser", async (ctx) => {
   try {
@@ -130,7 +133,7 @@ router.get("/common/randomGiftUser", async (ctx) => {
       throw new ErrorObj();
     }
   } catch (error) {
-    throw new ErrorObj(error, '循环查询次数超限！');
+    throw new ErrorObj(error, "循环查询次数超限！");
   }
 });
 
