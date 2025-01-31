@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import ErrorObj from "../../common/utils/errorObj.js";
 import { ToastCode } from "../../common/consts/businessCode.js";
-import { Chat, User } from "../../models/index.js";
+import { Chat, User, Photo } from "../../models/index.js";
 import { PassThrough } from "stream";
 
 const router = new Router();
@@ -34,19 +34,6 @@ router.post("/sendChat", async (ctx) => {
     };
   } catch (error) {
     throw new ErrorObj(error, "发送祝福失败");
-  }
-});
-router.post("/ssePhotoTest", async (ctx) => {
-  try {
-    clients.forEach((c) => {
-      c.res.write(`event: addPhoto\ndata: photophoto\n\n`);
-    });
-    ctx.body = {
-      message: "sse上传图片测试成功",
-      toastCode: ToastCode.success,
-    };
-  } catch (error) {
-    throw new ErrorObj(error, "sse上传图片测试失败");
   }
 });
 
@@ -99,12 +86,23 @@ router.get("/common/randomChats", async (ctx) => {
 router.post("/upload", async (ctx) => {
   try {
     const { targetFolder = "files", sseSend = false } = ctx.request.body;
+    const { openid } = ctx.request.header;
     const files = ctx.request.files; // 获取上传的文件
     const file = files[targetFolder];
+    const assetsUrl = `https://www.onelight.ink/userAssets/${targetFolder}/${file.newFilename}`;
     ctx.body = {
       message: "头像上传成功",
-      avatar: `https://www.onelight.ink/userAssets/${targetFolder}/${file.newFilename}`,
+      avatar: assetsUrl,
     };
+    if (sseSend) {
+      await Photo.create({
+        openid,
+        photoUrl,
+      });
+      clients.forEach((c) => {
+        c.res.write(`event: addPhoto\ndata: ${assetsUrl}\n\n`);
+      });
+    }
   } catch (error) {
     throw new ErrorObj(error, "上传失败");
   }
