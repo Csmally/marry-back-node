@@ -94,7 +94,7 @@ router.post("/upload", async (ctx) => {
       message: "头像上传成功",
       avatar: assetsUrl,
     };
-    if (sseSend) {
+    if (targetFolder === "lovePhoto") {
       await Photo.create({
         openid,
         photoUrl: assetsUrl,
